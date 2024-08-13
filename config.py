@@ -1,6 +1,6 @@
-waitTime = 5
-cameraType="OUT"
-server = "192.168.29.127"
+waitTime = 10
+cameraType="IN"
+server = "192.168.29.242"
 port = "1438"
 user = 'sa'
 password = "Sahil@2014"

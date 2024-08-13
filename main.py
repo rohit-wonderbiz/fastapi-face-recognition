@@ -27,6 +27,8 @@ if not os.path.exists(unknown_faces_dir):
 
 # List to track recently detected unknown faces
 recent_unknown_faces = []
+
+last_attendance_time = {}
 # Directory for storing images
 IMAGES_PATH = 'images/'
 
@@ -66,7 +68,6 @@ def detect_known_faces(known_face_id, known_face_names, known_face_encodings, fr
         conn.commit()
         print(f"Marked Attendance for {userId}")
 
-    last_attendance_time = {}
     
     # Detect faces using MTCNN
     detections = mtcnn_detector.detect_faces(frame)
@@ -98,7 +99,7 @@ def detect_known_faces(known_face_id, known_face_names, known_face_encodings, fr
         if matches[best_match_index] and face_distances[best_match_index] < 0.45:
             id = known_face_id[best_match_index]
             name = known_face_names[best_match_index]
-            if face_distances[best_match_index] < 0.3:
+            if face_distances[best_match_index] < 0.35:
                 if name not in last_attendance_time or (current_time - last_attendance_time[name]) > waitTime:
                     last_attendance_time[name] = current_time
                     mark_attendance(conn, id)
@@ -119,7 +120,7 @@ def detect_known_faces(known_face_id, known_face_names, known_face_encodings, fr
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    cap = cv2.VideoCapture("http://192.168.29.78:8080/video")
+    cap = cv2.VideoCapture(0)
 
     # Load known face encodings
     known_face_id, known_face_names, known_face_encodings = load_encodings_from_db(conn)
@@ -150,7 +151,7 @@ async def detect_employee():
 async def capture_face(employee_id: str):
     person_dir = os.path.join('images', employee_id)
     os.makedirs(person_dir, exist_ok=True)
-    cap = cv2.VideoCapture("http://192.168.29.78:8080/video")
+    cap = cv2.VideoCapture(0)
 
     ret, frame = cap.read()
     if ret:

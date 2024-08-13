@@ -5,3 +5,7 @@ mtcnn
 face_recognition
 pyodbc
 jinja2
+tensorflow
+python-multipart
+websocket
+dlib==19.18.0
